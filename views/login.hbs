@@ -1,0 +1,48 @@
+<h1>Login</h1>
+
+<!-- Show error message if credentials are incorrect -->
+{{#if messages}}
+  <div class="alert alert-danger">
+    {{messages}}
+  </div>
+{{else}}
+  <div class="alert alert-info">
+    Please enter your credentials
+  </div>
+{{/if}}
+
+<form method="post">
+
+  <fieldset class="form-group">
+    <label for="username" class="col-2 control-label">Username: *</label>
+    <input name="username" id="username" required />
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label for="password" class="col-2 control-label">Password: *</label>
+    <input name="password" id="password" type="password" required />
+  </fieldset>
+
+  <fieldset class="form-group">
+    <button type="submit" class="btn btn-info offset-3">Login</button>
+  </fieldset>
+
+</form>
+
+<hr />
+<fieldset class="form-group">
+  <a class="btn btn-info" href="/github">Login with Github</a>
+  <a class="btn btn-info" href="/auth/google">Login with Google</a>
+</fieldset>
+
+
+<!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script
+  src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"
+></script>
+
+<!-- Firebase configuration -->
+<script id="firebaseConfig" type="application/json">
+  {{{firebaseConfig}}}
+</script>
