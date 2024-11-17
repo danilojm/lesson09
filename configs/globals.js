@@ -1,36 +1,36 @@
 require("dotenv").config();
+
 // Global configurations object contains Application Level variables such as:
 // client secrets, passwords, connection strings, and misc flags
 const configurations = {
   ConnectionStrings: {
-    // MongoDB: process.env.CONNECTION_STRING_MONGODB,
-    MongoDB: "mongodb+srv://200549002:200549002@mongodb.p7kr3.mongodb.net/?retryWrites=true&w=majority&appName=MongoDB",
+    MongoDB: process.env.CONNECTION_STRING_MONGODB,
   },
   Authentication: {
     Google: {
-      ClientId: '381672938965-gn5p42j8n8r7jbonb3pc40kkjgbah9mr.apps.googleusercontent.com',
-      ClientSecret: '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',
-      CallbackUrl: "http://localhost:3000/auth/google/callback"
+      ClientId: process.env.GOOGLE_CLIENT_ID,
+      ClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      CallbackUrl: process.env.GOOGLE_CALLBACK_URL,
     },
     GitHub: {
-      ClientId: "Iv23li0nocJs0cC83I0U",
-      ClientSecret: "7b1f99ee5532b09f987e8ee49fb8132fae36fbe5",
-      CallbackUrl: "http://localhost:3000/github/callback"
+      ClientId: process.env.GITHUB_CLIENT_ID,
+      ClientSecret: process.env.GITHUB_CLIENT_SECRET,
+      CallbackUrl: process.env.GITHUB_CALLBACK_URL,
     },
     Firebase: {
-      apiKey: "AIzaSyDk6vS5KcEwlZWqWV3kwzZwN5OyiHecY3w",
-      authDomain: "javascriptauth-ed801.firebaseapp.com",
-      projectId: "javascriptauth-ed801",
-      storageBucket: "javascriptauth-ed801.firebasestorage.app",
-      messagingSenderId: "397755663232",
-      appId: "1:397755663232:web:f79799aad55612ac777765",
-      measurementId: "G-CWHLHDSL1V",
-      serviceAccountPath: "../keys/firebase.json"
+      apiKey: process.env.FIREBASE_API_KEY,
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.FIREBASE_APP_ID,
+      measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+      serviceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
     },
-
   },
   ContentSecurityPolicy: {
-    "script-src": "'self' 'unsafe-inline'"  // Relaxed policy for inline scripts
+    "script-src": process.env.CSP_SCRIPT_SRC,  // Relaxed policy for inline scripts
   },
 };
+
 module.exports = configurations;
