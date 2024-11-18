@@ -11,11 +11,12 @@ const hbs = require("hbs");
 require('dotenv').config();
 const admin = require('firebase-admin');
 
+/* Firebase service account configuration */
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
   project_id: process.env.FIREBASE_PROJECT_ID,
   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Ensure proper line breaks
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Proper formatting for private key
   client_email: process.env.FIREBASE_CLIENT_EMAIL,
   client_id: process.env.FIREBASE_CLIENT_ID,
   auth_uri: process.env.FIREBASE_AUTH_URI,
@@ -25,62 +26,62 @@ const serviceAccount = {
   universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN
 };
 
+/* Initialize Firebase Admin SDK */
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://javascriptauth-ed801.firebaseio.com'
 });
 
-// Import routes
+/* Import application routes */
 const indexRouter = require("./routes/index");
 const projectsRouter = require("./routes/projects");
 const coursesRouter = require("./routes/courses");
 
-// Import user model
+/* Import user model */
 const User = require("./models/user");
 
-// Import configuration
+/* Import application configurations */
 const configs = require("./configs/globals");
 
-// Import Passport strategies
+/* Import Passport authentication strategies */
 const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
 
-// Initialize Express app
+/* Initialize Express application */
 const app = express();
 
-// View engine setup
+/* Setup view engine with Handlebars */
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
-// Middleware
+/* Configure middleware for logging, JSON parsing, and session management */
 app.use(logger("dev"));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Session configuration
+/* Session configuration for storing user session data */
 app.use(
   session({
-    secret: "s2021pr0j3ctTracker",
+    secret: "s2021pr0j3ctTracker", // Secret for session encryption
     resave: false,
     saveUninitialized: false,
   })
 );
 
-// Set CSP dynamically using the config
+/* Apply Content Security Policy dynamically from configurations */
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', `script-src ${configs.ContentSecurityPolicy['script-src']};`);
   next();
 });
 
-// Initialize Passport
+/* Initialize Passport for user authentication */
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Connect to MongoDB
+/* Connect to MongoDB using Mongoose */
 mongoose
   .connect(configs.ConnectionStrings.MongoDB, {
     useNewUrlParser: true,
@@ -89,10 +90,10 @@ mongoose
   .then(() => console.log("Connected to MongoDB successfully!"))
   .catch((error) => console.error(`Error connecting to MongoDB: ${error}`));
 
-// Passport: Local Strategy for username/password authentication
+/* Configure Passport local strategy for username/password authentication */
 passport.use(User.createStrategy());
 
-// Passport: Google Strategy for OAuth authentication
+/* Configure Passport Google OAuth strategy */
 passport.use(
   new GoogleStrategy(
     {
@@ -121,7 +122,7 @@ passport.use(
   )
 );
 
-// Passport: GitHub Strategy for OAuth authentication
+/* Configure Passport GitHub OAuth strategy */
 passport.use(
   new GitHubStrategy(
     {
@@ -150,23 +151,23 @@ passport.use(
   )
 );
 
-// Serialize and deserialize user
+/* Serialize and deserialize user for session management */
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);  // Use async/await here
+    const user = await User.findById(id);
     done(null, user);
   } catch (err) {
-    done(err, null);  // Handle error by passing it to done
+    done(err, null);
   }
 });
 
-// Routing
+/* Setup application routes */
 app.use("/", indexRouter);
 app.use("/projects", projectsRouter);
 app.use("/courses", coursesRouter);
 
-// Handlebars helpers
+/* Register Handlebars helpers for dynamic content rendering */
 hbs.registerHelper("createOptionElement", (currentValue, selectedValue) => {
   const selectedProperty = currentValue == selectedValue.toString() ? "selected" : "";
   return new hbs.SafeString(`<option ${selectedProperty}>${currentValue}</option>`);
@@ -176,9 +177,10 @@ hbs.registerHelper("toShortDate", (longDateValue) =>
   new hbs.SafeString(longDateValue.toLocaleDateString("en-CA"))
 );
 
-// Error handling
+/* Error handling: handle 404 errors */
 app.use((req, res, next) => next(createError(404)));
 
+/* Error handling: render error page for other errors */
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
@@ -186,4 +188,5 @@ app.use((err, req, res, next) => {
   res.render("error");
 });
 
+/* Export the Express application */
 module.exports = app;

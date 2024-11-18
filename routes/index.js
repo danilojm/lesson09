@@ -4,21 +4,21 @@ const passport = require("passport");
 const User = require("../models/user");
 const configs = require("../configs/globals");
 
-// Middleware para garantir que o Firebase Config está presente
+/* Middleware to ensure Firebase configuration is available */
 function getFirebaseConfig(req, res, next) {
   res.locals.firebaseConfig = configs.Authentication.Firebase;
   next();
 }
 
-// Rotas principais
+/* Main route: renders the home page with user information */
 router.get("/", (req, res) => {
   res.render("index", { title: "Express", user: req.user });
 });
 
-// Rota de Login com Firebase Config incluído
+/* Login route: includes Firebase configuration and renders the login page */
 router.get("/login", getFirebaseConfig, (req, res) => {
   let messages = req.session.messages || [];
-  req.session.messages = []; // Limpar mensagens da sessão
+  req.session.messages = []; // Clear session messages
   res.render("login", {
     title: "Login",
     messages,
@@ -27,7 +27,7 @@ router.get("/login", getFirebaseConfig, (req, res) => {
   });
 });
 
-// Rota de autenticação local com Passport
+/* Handles local authentication using Passport.js */
 router.post(
   "/login",
   passport.authenticate("local", {
@@ -37,11 +37,12 @@ router.post(
   })
 );
 
-// Rota de Registro de Usuário
+/* Registration route: renders the user registration page */
 router.get("/register", (req, res) => {
   res.render("register", { title: "Create a new account", user: req.user });
 });
 
+/* Handles new user registration and automatic login after registration */
 router.post("/register", (req, res) => {
   const { username, password } = req.body;
   User.register(new User({ username }), password, (err, newUser) => {
@@ -60,7 +61,7 @@ router.post("/register", (req, res) => {
   });
 });
 
-// Logout
+/* Logout route: ends the user session and redirects to the login page */
 router.get("/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
@@ -70,12 +71,13 @@ router.get("/logout", (req, res) => {
   });
 });
 
-// ** Login com GitHub **
+/* GitHub login route: initiates authentication using GitHub */
 router.get(
   "/github",
   passport.authenticate("github", { scope: ["user:email"] })
 );
 
+/* Callback route for GitHub login: redirects to projects on success */
 router.get(
   "/github/callback",
   passport.authenticate("github", { failureRedirect: "/login" }),
@@ -84,12 +86,13 @@ router.get(
   }
 );
 
-// ** Login com Google **
+/* Google login route: initiates authentication using Google */
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+/* Callback route for Google login: redirects to projects on success */
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
